@@ -18,7 +18,7 @@ public static class MarchingTable
 
 	};
 
-	// Edge Table - Edges of the cube
+	// Edge Table - Edges of the cube, start and end points
 	public static Vector3[,] EdgeTable = new Vector3[12, 2] {
 
 		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f) },
@@ -37,6 +37,7 @@ public static class MarchingTable
 	};
 
 	// Triangle Table - Triangle indexes (configurations)
+		// -1 marks when done, 0 and 255 have 'nothing there'
 	public static int[,] TriangleTable = new int[,] {
 
 		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
