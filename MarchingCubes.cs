@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-// Attach Script to a game object with Components: Mesh Filter, Mesh Renderer
+// Attach Script to a game object with Components: Mesh Filter, Mesh Renderer, Mesh Collider. And add Tag "Terrain"
 public class MarchingCubes : MonoBehaviour
 {
     // Generated mesh data
@@ -11,6 +11,7 @@ public class MarchingCubes : MonoBehaviour
     List<int> triangles = new List<int>();
 
     MeshFilter meshFilter;
+    MeshCollider meshCollider;
 
     // Values above 'terrainSurface' are considered "solid"
     [SerializeField] float terrainSurface = 0.5f;
@@ -28,6 +29,9 @@ public class MarchingCubes : MonoBehaviour
     private void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
+
+        transform.tag = "Terrain";  //?
 
         // +1 in each dimension to cover every cube corner
         terrainMap = new float[width + 1, height + 1, width + 1];
@@ -167,5 +171,6 @@ public class MarchingCubes : MonoBehaviour
         mesh.RecalculateNormals();
 
         meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
     }
 }
