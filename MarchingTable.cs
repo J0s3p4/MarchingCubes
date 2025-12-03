@@ -18,23 +18,14 @@ public static class MarchingTable
 
 	};
 
-	// Edge Table - Edges of the cube, start and end points
-	public static Vector3[,] EdgeTable = new Vector3[12, 2] {
+	// Edge Indexes - Edges of the cube, start and end points
+	public static int[,] EdgeIndexes = new int[12, 2] {
 
-		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f) },
-		{ new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },
-		{ new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },
-		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f) },
-		{ new Vector3(0.0f, 0.0f, 1.0f), new Vector3(1.0f, 0.0f, 1.0f) },
-		{ new Vector3(1.0f, 0.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-		{ new Vector3(0.0f, 1.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-		{ new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 1.0f, 1.0f) },
-		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 1.0f) },
-		{ new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 1.0f) },
-		{ new Vector3(1.0f, 1.0f, 0.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-		{ new Vector3(0.0f, 1.0f, 0.0f), new Vector3(0.0f, 1.0f, 1.0f) }
+		{0, 1}, {1, 2}, {3, 2}, {0, 3}, 
+		{4, 5}, {5, 6}, {7, 6}, {4, 7}, 
+		{0, 4}, {1, 5}, {2, 6}, {3, 7}
 
-	};
+    };
 
 	// Triangle Table - Triangle indexes (configurations)
 		// -1 marks when done, 0 and 255 have 'nothing there'
