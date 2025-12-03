@@ -12,27 +12,104 @@ public class MarchingCubes : MonoBehaviour
 
     MeshFilter meshFilter;
 
+    float terrainSurface = 0.5f;
+    int width = 32;
+    int height = 8;
+    float[,,] terrainMap;
+
     [SerializeField] int _configIndex = -1;
 
     private void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
+        terrainMap = new float[width + 1, height + 1, width + 1];
+
+        PopulateTerrainMap();
+        CreateMeshData();
+        BuildMesh();
     }
 
-    private void Update()
+
+    void PopulateTerrainMap()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        for (int x = 0; x < width + 1; x++)
         {
-            _configIndex++;
-            ClearMeshData();
-            MarchCube(Vector3.zero, _configIndex);
-            BuildMesh();
+            for (int y = 0; y < height + 1; y++)
+            {
+                for (int z = 0; z < width + 1; z++)
+                {
+                    // 16 is arbitrary, + 0.001 to avoid whole number
+                    float thisHeight = (float)height * Mathf.PerlinNoise((float)x / 16f * 1.5f + 0.001f, (float)z / 16f * 1.5f + 0.001f);
+
+                    float point = 0f;
+
+                    
+                    if (y <= thisHeight - 0.5f)
+                    {
+                        point = 0f; // In the ground
+                    }
+                    else if (y > thisHeight + 0.5f)
+                    {
+                        point = 1f;
+                    }
+                    else if (y > thisHeight)
+                    {
+                        point = (float)y - thisHeight;
+                    }
+                    else
+                    {
+                        point = thisHeight - (float)y;
+                    }
+
+                    terrainMap[x,y,z] = point;
+                }
+            }
         }
     }
 
-    // position - position of given cube, configIndex - index fron the triangle table
-    void MarchCube (Vector3 position, int configIndex)
+    void CreateMeshData()
     {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int z = 0; z < width; z++)
+                {
+                    float[] cube = new float[8];
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Vector3Int corner = new Vector3Int(x, y ,z) + MarchingTable.CornerTable[i];
+                        cube[i] = terrainMap[corner.x,corner.y,corner.z];
+                    }
+
+                    MarchCube(new Vector3(x, y, z), cube);
+                }
+            }
+        }
+     }
+
+    int GetCubeConfiguration(float[] cube)
+    {
+        int configurationIndex = 0;
+        
+        for (int i = 0; i < 8; i++) // 8 corners
+        {
+            if (cube[i] > terrainSurface)
+            {
+                configurationIndex |= 1 << i;
+            }
+        }
+
+        return configurationIndex;
+
+    }
+
+    // position - position of given cube, configIndex - index fron the triangle table
+    void MarchCube (Vector3 position, float[] cube)
+    {
+
+        int configIndex = GetCubeConfiguration(cube);
+
         if (configIndex == 0 || configIndex == 255)
         {
             return; // 'nothing there' for 0 and 255
