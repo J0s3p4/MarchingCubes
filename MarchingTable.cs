@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class MarchingTable
+public static class MarchingTable 
 {
-	public static Vector3Int[] Corners = new Vector3Int[8] {
+	// Corner Table - Corners of the cube
+	public static Vector3Int[] CornerTable = new Vector3Int[8] {
 
 		new Vector3Int(0, 0, 0),
 		new Vector3Int(1, 0, 0),
@@ -17,7 +18,8 @@ public static class MarchingTable
 
 	};
 
-	public static Vector3[,] Edges = new Vector3[12, 2] {
+	// Edge Table - Edges of the cube
+	public static Vector3[,] EdgeTable = new Vector3[12, 2] {
 
 		{ new Vector3(0.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f) },
 		{ new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },
@@ -34,7 +36,8 @@ public static class MarchingTable
 
 	};
 
-	public static int[,] Triangles = new int[,] {
+	// Triangle Table - Triangle indexes (configurations)
+	public static int[,] TriangleTable = new int[,] {
 
 		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 		{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
