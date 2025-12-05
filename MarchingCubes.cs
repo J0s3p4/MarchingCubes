@@ -5,7 +5,7 @@ using UnityEngine;
 // This script is intended to be used as a Prefab and managed by a TerrainManager.
 public class MarchingCubes : MonoBehaviour
 {
-    // Public property set by the TerrainManager to offset Perlin noise sampling
+    // To offset Perlin noise sampling
     [HideInInspector] public Vector3 chunkOffset;
 
     // Generated mesh data
@@ -15,7 +15,7 @@ public class MarchingCubes : MonoBehaviour
     private MeshFilter meshFilter;
     private MeshCollider meshCollider;
 
-    // Values above 'terrainSurface' are considered "solid"
+    // Values above 'terrainSurface'
     [SerializeField] float terrainSurface = 0.5f;
 
     // Dimensions of the voxel field (Chunk size - MUST match the value used in TerrainManager)
@@ -50,7 +50,6 @@ public class MarchingCubes : MonoBehaviour
             {
                 for (int z = 0; z < width + 1; z++)
                 {
-                    // --- CRITICAL CHANGE ---
                     // Calculate the absolute world position of this voxel corner
                     // This ensures the noise is continuous across chunk boundaries
                     float worldX = chunkOffset.x + x;
@@ -98,7 +97,7 @@ public class MarchingCubes : MonoBehaviour
         {
             if (cube[i] > terrainSurface)
             {
-                // Set bit i if the corner is above the surface threshold (solid)
+                // Set bit i if the corner is above the surface threshold
                 configurationIndex |= 1 << i;
             }
         }
