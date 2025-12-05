@@ -1,37 +1,34 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-// Attach Script to a game object with Components: Mesh Filter, Mesh Renderer, Mesh Collider. And add Tag "Terrain"
+// Attach Script to a game object with Components: Mesh Filter, Mesh Renderer, Mesh Collider.
+// This script is intended to be used as a Prefab and managed by a TerrainManager.
 public class MarchingCubes : MonoBehaviour
 {
+    // To offset Perlin noise sampling
+    [HideInInspector] public Vector3 chunkOffset;
+
     // Generated mesh data
-    List<Vector3> vertices = new List<Vector3>();
-    List<int> triangles = new List<int>();
+    private List<Vector3> vertices = new List<Vector3>();
+    private List<int> triangles = new List<int>();
 
-    MeshFilter meshFilter;
-    MeshCollider meshCollider;
+    private MeshFilter meshFilter;
+    private MeshCollider meshCollider;
 
-    // Values above 'terrainSurface' are considered "solid"
+    // Values above 'terrainSurface'
     [SerializeField] float terrainSurface = 0.5f;
 
-    // Dimensions of the voxel field
-    [SerializeField] int width = 32;
-    [SerializeField] int height = 8;
+    // Dimensions of the voxel field (Chunk size - MUST match the value used in TerrainManager)
+    [SerializeField] public int width = 32;
+    [SerializeField] public int height = 8;
 
     // Scalar field storing density values for each point
-    float[,,] terrainMap;
-
-    // Debug helper to inspect specific marching config
-    [SerializeField] int _configIndex = -1;
+    private float[,,] terrainMap;
 
     private void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
-
-        transform.tag = "Terrain";  //?
 
         // +1 in each dimension to cover every cube corner
         terrainMap = new float[width + 1, height + 1, width + 1];
@@ -44,19 +41,28 @@ public class MarchingCubes : MonoBehaviour
     // Fill the terrainMap[] with values from Perlin noise
     void PopulateTerrainMap()
     {
+        // Caching the combined scaling factor for noise lookup
+        float noiseScale = 16f * 1.5f;
+
         for (int x = 0; x < width + 1; x++)
         {
             for (int y = 0; y < height + 1; y++)
             {
                 for (int z = 0; z < width + 1; z++)
                 {
-                    // Generate height using Perlin noise (scaled down) (arbitrary numbers (16f), the "+ 0.001" is to prevent a whole)
+                    // Calculate the absolute world position of this voxel corner
+                    // This ensures the noise is continuous across chunk boundaries
+                    float worldX = chunkOffset.x + x;
+                    float worldZ = chunkOffset.z + z;
+
+                    // Generate height using Perlin noise, based on world position
                     float thisHeight = (float)height * Mathf.PerlinNoise(
-                        (float)x / 16f * 1.5f + 0.001f,
-                        (float)z / 16f * 1.5f + 0.001f
+                        worldX / noiseScale + 0.001f, // Use worldX
+                        worldZ / noiseScale + 0.001f  // Use worldZ
                     );
 
                     // Set the value of this point in the terrainMap
+                    // (y coordinate minus the calculated height)
                     terrainMap[x, y, z] = (float)y - thisHeight;
                 }
             }
@@ -66,13 +72,15 @@ public class MarchingCubes : MonoBehaviour
 
     void CreateMeshData()
     {
+        // Clear previous data before generating new mesh data
+        ClearMeshData();
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 for (int z = 0; z < width; z++)
                 {
-
                     // Generate geometry for this cube
                     MarchCube(new Vector3Int(x, y, z));
                 }
@@ -100,7 +108,6 @@ public class MarchingCubes : MonoBehaviour
     // Generate triangles for one cube according to its configuration index
     void MarchCube(Vector3Int position)
     {
-
         // Sample terrain values at each corner of the cube
         float[] cube = new float[8];
         for (int i = 0; i < 8; i++)
@@ -110,7 +117,7 @@ public class MarchingCubes : MonoBehaviour
 
         int configIndex = GetCubeConfiguration(cube);
 
-        // Skip completely empty (full -1)
+        // Skip completely empty or completely full cubes
         if (configIndex == 0 || configIndex == 255)
         {
             return;
@@ -118,7 +125,7 @@ public class MarchingCubes : MonoBehaviour
 
         int edgeIndex = 0;
 
-        // Up to 5 triangles per cube
+        // Iterate through the triangles defined for this configuration
         for (int i = 0; i < 5; i++)
         {
             // Each triangle has 3 vertices
@@ -128,17 +135,17 @@ public class MarchingCubes : MonoBehaviour
 
                 if (indice == -1)
                 {
-                    return; // No more triangles for this configuration
+                    return; // No more vertices/triangles for this configuration
                 }
 
                 // Look up the two endpoints of this edge
                 Vector3 vert1 = position + MarchingTable.CornerTable[MarchingTable.EdgeIndexes[indice, 0]];
                 Vector3 vert2 = position + MarchingTable.CornerTable[MarchingTable.EdgeIndexes[indice, 1]];
 
-                // Midpoint = linear interpolation (not yet true iso-surface)
+                // Midpoint = linear interpolation (simple midpoint for now)
                 Vector3 vertPosition = (vert1 + vert2) / 2f;
 
-                // Store vertex + triangle index
+                // Store vertex and triangle index
                 vertices.Add(vertPosition);
                 triangles.Add(vertices.Count - 1);
 
@@ -147,7 +154,7 @@ public class MarchingCubes : MonoBehaviour
         }
     }
 
-    float SampleTerrain (Vector3Int point)
+    float SampleTerrain(Vector3Int point)
     {
         return terrainMap[point.x, point.y, point.z];
     }
