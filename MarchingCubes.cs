@@ -19,8 +19,8 @@ public class MarchingCubes : MonoBehaviour
     [SerializeField] float terrainSurface = 0.5f;
 
     // Dimensions of the voxel field (Chunk size - MUST match the value used in TerrainManager)
-    [SerializeField] int width = 32;
-    [SerializeField] int height = 8;
+    [SerializeField] public int width = 32;
+    [SerializeField] public int height = 8;
 
     // Scalar field storing density values for each point
     private float[,,] terrainMap;

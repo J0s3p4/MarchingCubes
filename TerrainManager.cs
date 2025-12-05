@@ -12,6 +12,7 @@ public class TerrainManager : MonoBehaviour
     // Radius of chunks (in chunk units) to generate around the player
     public int viewDistance = 8;
 
+    // ToDo, Get chunk size from marching cubes?
     // Size of a single chunk (should match the dimensions in MarchingCubes)
     private readonly int chunkSize = 32;
 
@@ -52,7 +53,7 @@ public class TerrainManager : MonoBehaviour
     // Primary function to generate new chunks and destroy old ones
     void GenerateChunks()
     {
-        // --- 1. Generate/Update Chunks ---
+        // Generate/Update Chunks 
         Vector3Int playerCoord = GetPlayerChunkCoord();
         HashSet<Vector3Int> chunksToKeep = new HashSet<Vector3Int>();
 
@@ -84,7 +85,7 @@ public class TerrainManager : MonoBehaviour
             }
         }
 
-        // --- 2. Destroy Far-Away Chunks ---
+        // Destroy Far-Away Chunks
         List<Vector3Int> chunksToDestroy = new List<Vector3Int>();
 
         foreach (var pair in activeChunks)

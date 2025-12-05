@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4079988566017971123}
   - component: {fileID: 6898475058175147172}
+  - component: {fileID: 9199122414241446769}
   - component: {fileID: 5047272175930942900}
   - component: {fileID: 1565754965357659358}
   - component: {fileID: 461214083181441436}
@@ -48,9 +49,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chunk
   chunkOffset: {x: 0, y: 0, z: 0}
-  terrainSurface: 0.5
+  terrainSurface: 0.6
   width: 32
-  height: 8
+  height: 10
+--- !u!114 &9199122414241446769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771399494352840560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f48920637bb7a5418f4b823506b607c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoliageSpawner
+  treePrefab: {fileID: 7259840132985158868, guid: 50fc7121771332b4bb95beb16db7bcf7, type: 3}
+  treeCount: 30
+  noiseScale: 10
+  noiseThreshold: 0.5
 --- !u!23 &5047272175930942900
 MeshRenderer:
   m_ObjectHideFlags: 0
